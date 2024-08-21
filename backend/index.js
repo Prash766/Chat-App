@@ -13,6 +13,11 @@ app.use(cors({
 }))
 app.use(express.json())
 
+app.use(express.urlencoded({
+    extended:true
+}))
+
+
 
 connectDB().then(()=>{
     const CHAT_BOT = 'ChatBot'
@@ -80,9 +85,77 @@ io.on('connection' , (socket)=>{
     })
 })
 
-app.get('/' , (req, res)=>{
-    res.send("<h1>HEY THERE </h1>")
-})
+// app.get('/getMessages', async (req, res) => {
+//     const { roomId } = req.query;
+//     const { page = 0 } = req.query;
+//     const limit = 10;
+
+//     try {
+//         const totalMessages = await ChatMessage.countDocuments({ roomID: roomId });
+//         const numberOfPages = Math.ceil(totalMessages / limit);
+//         if (page >= numberOfPages) {
+//             return res.status(400).json({ msg: "Invalid page number" });
+//         }
+//         const roomMessages = await ChatMessage.find({ roomID: roomId })
+//         .sort({createdAt:-1})
+//             .skip(page * limit)
+//             .limit(limit);
+//         if (!roomMessages.length) {
+//             return res.status(400).json({ msg: "Invalid Room ID" });
+//         }
+
+//         return res.status(200).json({
+//             msg: "Chats retrieved successfully",
+//             roomMessages,
+//             totalMessages,
+//             numberOfPages,
+//             currentPage: page
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         return res.status(500).json({ msg: "Server error" });
+//     }
+// });
+
+app.get('/getMessages', async (req, res) => {
+    const { roomId } = req.query;
+    const page = parseInt(req.query.page, 10) || 0; 
+    const limit = 10;
+
+    try {
+        if (!roomId) {
+            return res.status(400).json({ msg: "Room ID is required" });
+        }
+
+        const totalMessages = await ChatMessage.countDocuments({ roomID: roomId });
+        const numberOfPages = Math.ceil(totalMessages / limit);
+
+        if (page < 0 || page >= numberOfPages) {
+            return res.status(400).json({ msg: "Invalid page number" });
+        }
+
+        const roomMessages = await ChatMessage.find({ roomID: roomId })
+            .sort({ createdAt: -1 })
+            .skip(page * limit)
+            .limit(limit);
+
+        if (!roomMessages.length && page > 0) {
+            return res.status(404).json({ msg: "No messages found for this page" });
+        }
+
+        return res.status(200).json({
+            msg: "Chats retrieved successfully",
+            roomMessages,
+            totalMessages,
+            numberOfPages,
+            currentPage: page
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ msg: "Server error" });
+    }
+});
+
 
 
 server.listen(process.env.PORT, ()=>{

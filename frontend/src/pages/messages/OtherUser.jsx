@@ -4,7 +4,7 @@ import { useRecoilValue } from 'recoil'
 import { Username } from '@/atoms/formAtom'
 
 
-const OtherUser = ({message , username}) => {
+const OtherUser = ({message , username , time}) => {
   return (
     <div className="flex items-start gap-3">
       <Avatar className="w-8 h-8 border border-[#30363d]">
@@ -14,7 +14,7 @@ const OtherUser = ({message , username}) => {
       <div className="bg-[#30363d] rounded-lg p-3 max-w-[70%]">
         <p className="font-medium">{username}</p>
         <p className="text-sm">{message}</p>
-        <div className="text-xs text-[#8b949e] mt-1 text-right">2:30 PM</div>
+        <div className="text-xs text-[#8b949e] mt-1 text-right">{time}</div>
       </div>
     </div>
     
