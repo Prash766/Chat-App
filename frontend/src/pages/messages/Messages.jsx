@@ -7,7 +7,7 @@ import OtherUser from './OtherUser';
 import Me from './Me';
 import { RoomId, Username } from '@/atoms/formAtom';
 import { toast } from 'sonner';
-import { PageNo } from '@/atoms/Page';
+import { PageNo, totalPage } from '@/atoms/Page';
 import axios from 'axios';
 import { hasMoreMessages } from '@/atoms/hasMore';
 import { EnteredChat } from '@/atoms/hasReloaded';
@@ -21,6 +21,7 @@ const Messages = () => {
     const [hasMore , setHasMore]  = useRecoilState(hasMoreMessages);
     const [pageNo, setPageNo] = useRecoilState(PageNo);
     const [hasEntered , setHasEntered]  = useRecoilState(EnteredChat)
+    const [totalPages , setTotalPage] = useRecoilState(totalPage)
 
     useEffect(() => {
         fetchMessages();
@@ -35,7 +36,8 @@ const Messages = () => {
 
 
             const res = await axios.get(`http://localhost:4000/getMessages?roomId=${storedRoomId}&page=${pageNo}`);
-            if (res.data.roomMessages.length) {
+            if (res.data.roomMessages.length && (pageNo < totalPages)) {
+                setTotalPage(res.data.numberOfPages)
                 setMessages(prev => [...res.data.roomMessages.reverse(), ...prev]);
                 setPageNo(prev => prev + 1);
                 setTimeout(() => {
@@ -45,12 +47,12 @@ const Messages = () => {
                 setHasMore(false);
             }
         } catch (error) {
-            console.error('Failed to fetch messages:', error);
+            return
         }
     };
 
     const handleScroll = () => {
-        if (chatRef.current.scrollTop === 0 && hasMore) {
+        if (chatRef.current.scrollTop === 0 && hasMore && pageNo <totalPages) {
             fetchMessages();
         }
     };
@@ -58,7 +60,7 @@ const Messages = () => {
 
     useEffect(() => {
         chatRef.current.addEventListener('scroll', handleScroll);
-        return () => chatRef.current.removeEventListener('scroll', handleScroll);
+        return () =>{if(chatRef.current) chatRef.current.removeEventListener('scroll', handleScroll)}
     }, [handleScroll]);
 
     useEffect(() => {

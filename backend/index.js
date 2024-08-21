@@ -52,7 +52,7 @@ io.on('connection' , (socket)=>{
         console.log(`Emitting receive_message to room: ${roomId}`);  // Log this
     
         socket.to(roomId).emit('recieve_message', {
-            message: `${username} has joined the chat room`,
+            messageContent: `${username} has joined the chat room`,
             username: CHAT_BOT,
             __createdtime__
         });
@@ -85,37 +85,6 @@ io.on('connection' , (socket)=>{
     })
 })
 
-// app.get('/getMessages', async (req, res) => {
-//     const { roomId } = req.query;
-//     const { page = 0 } = req.query;
-//     const limit = 10;
-
-//     try {
-//         const totalMessages = await ChatMessage.countDocuments({ roomID: roomId });
-//         const numberOfPages = Math.ceil(totalMessages / limit);
-//         if (page >= numberOfPages) {
-//             return res.status(400).json({ msg: "Invalid page number" });
-//         }
-//         const roomMessages = await ChatMessage.find({ roomID: roomId })
-//         .sort({createdAt:-1})
-//             .skip(page * limit)
-//             .limit(limit);
-//         if (!roomMessages.length) {
-//             return res.status(400).json({ msg: "Invalid Room ID" });
-//         }
-
-//         return res.status(200).json({
-//             msg: "Chats retrieved successfully",
-//             roomMessages,
-//             totalMessages,
-//             numberOfPages,
-//             currentPage: page
-//         });
-//     } catch (error) {
-//         console.error(error);
-//         return res.status(500).json({ msg: "Server error" });
-//     }
-// });
 
 app.get('/getMessages', async (req, res) => {
     const { roomId } = req.query;

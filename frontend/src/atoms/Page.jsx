@@ -7,5 +7,5 @@ export const PageNo = atom({
 
 export const totalPage = atom({
     key:"TotalPageAtom",
-    default:0
+    default:1
 })

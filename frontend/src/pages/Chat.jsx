@@ -8,6 +8,7 @@ import { useRecoilState, useRecoilValue } from "recoil"
 import { sendingMessage } from "@/atoms/Messages"
 import { useSocket } from "@/atoms/Socket"
 import { RoomId, Username } from "@/atoms/formAtom"
+import ChatMembers from "./ChatMembers"
 
 export default function Chat() {
   const [messageContent , setMessageContent] = useRecoilState(sendingMessage)
@@ -23,44 +24,20 @@ export default function Chat() {
     setMessageContent('')
   }
   return (
-    <div className="flex h-screen  w-full bg-[#0d1117] text-white">
-      <div className="border-r border-[#30363d] w-[300px] p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-medium">Chats</h2>
-
+    <div className="flex h-screen  w-full  bg-[#0d1117] text-white">
+      <div className="border-r overflow-auto border-[#30363d] w-[300px] p-4">
+        <div className="flex items-center justify-between mb-4 ">
+          <h2 className=" text-lg font-medium">Room Members</h2>
+       
         </div>
-        <Input
-          placeholder="Search chats"
-          className="bg-[#21262d] border-[#30363d] text-white placeholder:text-[#8b949e] mb-4"
-        />
-        <div className="space-y-5">
-          <Link to="#" className="flex items-center gap-3 p-2 rounded-md hover:bg-[#30363d]">
-            <Avatar className="w-10 h-10 border border-[#30363d]">
-              <AvatarImage src="/placeholder-user.jpg" alt="User Avatar" />
-              <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 truncate">
-              <p className="font-medium">John Doe</p>
-              <p className="text-sm text-[#8b949e] truncate">Hey, how's it going?</p>
-            </div>
-            <div className="text-sm text-[#8b949e]">2:30 PM</div>
-          </Link>
-          <Link to="#" className="flex items-center gap-3 p-2 rounded-md hover:bg-[#30363d]">
-            <Avatar className="w-10 h-10 border border-[#30363d]">
-              <AvatarImage src="/placeholder-user.jpg" alt="User Avatar" />
-              <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 truncate">
-              <p className="font-medium">Jane Smith</p>
-              <p className="text-sm text-[#8b949e] truncate">Did you see the new update?</p>
-            </div>
-            <div className="text-sm text-[#8b949e]">11:45 AM</div>
-          </Link>
+
+        <div className="space-y-5 pt-2 ">
+          <ChatMembers/>
         </div>
       </div>
       <div className="flex-1 flex flex-col">
         <div className="border-b border-[#30363d] p-6 flex items-center justify-between">
-          <h2 className="text-lg font-medium">Chat with John Doe</h2>
+          <h2 className="text-lg font-medium">{roomId}</h2>
          
         </div>
     <>
