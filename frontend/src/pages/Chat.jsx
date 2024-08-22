@@ -2,14 +2,19 @@ import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom"
 import { Textarea } from "@/components/ui/textarea"
 import Messages from "./messages/Messages"
-import { useRecoilState, useRecoilValue } from "recoil"
-import { sendingMessage } from "@/atoms/Messages"
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
+import { Messages_Chat, sendingMessage } from "@/atoms/Messages"
 import { useSocket } from "@/atoms/Socket"
 import { RoomId, Username } from "@/atoms/formAtom"
 import ChatMembers from "./ChatMembers"
+import { EnteredChat } from "@/atoms/hasReloaded"
 
 export default function Chat() {
   const [messageContent , setMessageContent] = useRecoilState(sendingMessage)
+  
+  const setMessages = useSetRecoilState(Messages_Chat);
+  const setHasEntered  = useSetRecoilState(EnteredChat)
+
   const username = useRecoilValue(Username)
   const roomId = useRecoilValue(RoomId)
   const socket = useSocket()
@@ -33,6 +38,10 @@ export default function Chat() {
         __createdtime__
 
       })
+      localStorage.setItem('username' ,"")
+      localStorage.setItem('roomId' , "")
+      setMessages([])
+      setHasEntered(false)
       navigate('/', {replace:true})
     }
 

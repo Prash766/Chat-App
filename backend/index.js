@@ -9,7 +9,7 @@ const app= express()
 const server = createServer(app)
 app.use(cors({
 
-    origin:"https://chat-app-azure-mu.vercel.app"
+    origin:["https://chat-app-azure-mu.vercel.app" ,"http://localhost:5173"],
 }))
 app.use(express.json())
 
@@ -20,14 +20,14 @@ app.use(express.urlencoded({
 
 
 connectDB().then(()=>{
-    const CHAT_BOT = 'ChatBot'
+const CHAT_BOT = 'ChatBot'
 let ChatRoom = ''
 let allUsers =[]
 let chatRoomUsers
 
 const io = new Server(server ,{
     cors:{
-        origin:"https://chat-app-azure-mu.vercel.app",
+        origin:["https://chat-app-azure-mu.vercel.app" ,"http://localhost:5173"],
         methods:["GET" ,"POST"]
     }
 })
@@ -39,7 +39,7 @@ io.on('connection' , (socket)=>{
 
     socket.on('join_room', (data) => {
         const { username, roomId } = data;
-        console.log(`${username} joined room: ${roomId}`);  // Log this
+        console.log(`${username} joined room: ${roomId}`);  
         ChatRoom = roomId;
     
         allUsers.push({ id: socket.id, username, roomId });
@@ -51,8 +51,7 @@ io.on('connection' , (socket)=>{
     
         socket.join(roomId);
         let __createdtime__ = Date.now();
-        console.log(`Emitting receive_message to room: ${roomId}`);  // Log this
-    
+        console.log(`Emitting receive_message to room: ${roomId}`);
         socket.to(roomId).emit('recieve_message', {
             messageContent: `${username} has joined the chat room`,
             username: CHAT_BOT,

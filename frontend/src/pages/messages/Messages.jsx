@@ -1,5 +1,4 @@
-
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef} from 'react';
 import { useSocket } from '@/atoms/Socket';
 import { useRecoilState } from 'recoil';
 import { Messages_Chat } from '@/atoms/Messages';
@@ -34,6 +33,7 @@ const Messages = () => {
 
         try {
             const res = await axios.get(`http://localhost:4000/getMessages?roomId=${storedRoomId}&page=${pageNo}`);
+            console.log(res)
             if (res.data.roomMessages.length && pageNo < totalPages) {
                 setTotalPage(res.data.numberOfPages);
 
@@ -99,30 +99,35 @@ const Messages = () => {
         }
 
         socket.on('recieve_message', (data) => {
+            console.log("Retreived message")
+
             setMessages(prev => [...prev, {
                 message: data.messageContent,
                 username: data.username,
                 __createdtime__: data.__createdtime__
             }]);
+            console.log("socket messages ",messages)
 
-            socket.on('disconnect', (data)=>{
-                setMessages(prev => [...prev, {
-                    message:data.messageContent,
-                    username:data.username,
-                    __createdtime__:data.__createdtime__
-                    
-
-                }])
-                localStorage.setItem('username' ,"")
-                localStorage.setItem('roomId' , "")
-                setHasEntered(false)
-            })
+           //dis
+          
 
 
             if (data.username === 'ChatBot' && !hasEntered) {
                 toast.success(`Welcome to ${storedRoomId} ${storedUsername}`);
             }
         });
+        socket.on('disconnect', (data)=>{
+            setMessages(prev => [...prev, {
+                message:data.messageContent,
+                username:data.username,
+                __createdtime__:data.__createdtime__
+                
+
+            }])
+            
+            
+        })
+   
 
         return () => {
             socket.off('recieve_message');
@@ -133,7 +138,7 @@ const Messages = () => {
     return (
         <div ref={chatRef} className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.map((message, index) => {
-                if(message.username==='ChatBot' && !hasEntered){
+                if(message.username==='ChatBot'){
                     return <OtherUser time={handleTime(message.__createdtime__)} username={message.username} key={index} message={message.message} />;
                 }
                 if (message.username !== username) {
