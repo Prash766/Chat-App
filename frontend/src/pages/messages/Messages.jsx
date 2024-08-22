@@ -22,7 +22,6 @@ const Messages = () => {
     const [pageNo, setPageNo] = useRecoilState(PageNo);
     const [hasEntered , setHasEntered]  = useRecoilState(EnteredChat)
     const [totalPages , setTotalPage] = useRecoilState(totalPage)
-    const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
 
 
 
@@ -109,7 +108,6 @@ const Messages = () => {
                 __createdtime__: data.__createdtime__
             }]);
 
-            setShouldScrollToBottom(true); 
 
             if (data.username === 'ChatBot' && !hasEntered) {
                 toast.success(`Welcome to ${storedRoomId} ${storedUsername}`);
