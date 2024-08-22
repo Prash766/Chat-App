@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSocket } from '@/atoms/Socket';
 import { useRecoilState } from 'recoil';
 import { Messages_Chat } from '@/atoms/Messages';
@@ -22,10 +22,13 @@ const Messages = () => {
     const [pageNo, setPageNo] = useRecoilState(PageNo);
     const [hasEntered , setHasEntered]  = useRecoilState(EnteredChat)
     const [totalPages , setTotalPage] = useRecoilState(totalPage)
+    const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
+
+
 
     useEffect(() => {
         fetchMessages();
-        setHasEntered(true)
+        setHasEntered(true);
     }, []);
 
     const fetchMessages = async () => {
@@ -33,41 +36,44 @@ const Messages = () => {
         if (!hasMore) return;
 
         try {
-
-
             const res = await axios.get(`http://localhost:4000/getMessages?roomId=${storedRoomId}&page=${pageNo}`);
-            if (res.data.roomMessages.length && (pageNo < totalPages)) {
-                setTotalPage(res.data.numberOfPages)
+            if (res.data.roomMessages.length && pageNo < totalPages) {
+                setTotalPage(res.data.numberOfPages);
+
+                const previousScrollHeight = chatRef.current.scrollHeight;
                 setMessages(prev => [...res.data.roomMessages.reverse(), ...prev]);
                 setPageNo(prev => prev + 1);
                 setTimeout(() => {
-                    chatRef.current.scrollTop = chatRef.current.scrollHeight;
+                    const newScrollHeight = chatRef.current.scrollHeight;
+                    chatRef.current.scrollTop = newScrollHeight - previousScrollHeight;
                 }, 0);
+
+
             } else {
                 setHasMore(false);
             }
         } catch (error) {
-            return
+            return;
         }
     };
 
     const handleScroll = () => {
-        if (chatRef.current.scrollTop === 0 && hasMore && pageNo <totalPages) {
+        if (chatRef.current.scrollTop === 0 && hasMore && pageNo < totalPages) {
             fetchMessages();
         }
     };
 
-
     useEffect(() => {
         chatRef.current.addEventListener('scroll', handleScroll);
-        return () =>{if(chatRef.current) chatRef.current.removeEventListener('scroll', handleScroll)}
+        return () => {
+            if (chatRef.current) chatRef.current.removeEventListener('scroll', handleScroll);
+        };
     }, [handleScroll]);
 
     useEffect(() => {
         if (chatRef.current) {
-            chatRef.current.scrollTop = chatRef.current.scrollHeight
+            chatRef.current.scrollTop = chatRef.current.scrollHeight;
         }
-       
     }, [messages]);
 
     function handleTime(time) {
@@ -103,6 +109,8 @@ const Messages = () => {
                 __createdtime__: data.__createdtime__
             }]);
 
+            setShouldScrollToBottom(true); 
+
             if (data.username === 'ChatBot' && !hasEntered) {
                 toast.success(`Welcome to ${storedRoomId} ${storedUsername}`);
             }
@@ -112,6 +120,7 @@ const Messages = () => {
             socket.off('recieve_message');
         };
     }, [socket, setMessages, setUsername, setRoomId]);
+
 
     return (
         <div ref={chatRef} className="flex-1 overflow-y-auto p-4 space-y-4">
