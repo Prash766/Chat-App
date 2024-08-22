@@ -1,7 +1,7 @@
 import React from 'react'
 import { useRecoilState } from 'recoil'
 import { RoomId, Username } from '../atoms/formAtom'
-import { useSocket } from '../atoms/socket'
+import { useSocket } from '../atoms/Socket.jsx'
 import { useNavigate } from 'react-router-dom'
 
 const FormPage = () => {
