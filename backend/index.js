@@ -9,7 +9,7 @@ const app= express()
 const server = createServer(app)
 app.use(cors({
 
-    origin:"http://localhost:5173"
+    origin:"https://chat-app-azure-mu.vercel.app/"
 }))
 app.use(express.json())
 
@@ -27,7 +27,7 @@ let chatRoomUsers
 
 const io = new Server(server ,{
     cors:{
-        origin:"http://localhost:5173",
+        origin:"https://chat-app-azure-mu.vercel.app/",
         methods:["GET" ,"POST"]
     }
 })
