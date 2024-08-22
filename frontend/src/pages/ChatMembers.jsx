@@ -14,7 +14,6 @@ const ChatMembers = () => {
             console.log(data)
             setMemberList(() => {
                 const usernamesSet = new Set(data.map(user => user.username))
-                console.log(usernamesSet)                
                 return [...usernamesSet]
             })
         })

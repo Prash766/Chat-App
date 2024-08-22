@@ -1,11 +1,8 @@
 import React from 'react'
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { Username } from '@/atoms/formAtom'
-import { useRecoilValue } from 'recoil'
 
 
 const Me = ({message, time}) => {
-  const username= useRecoilValue(Username)
 
   return (
     <div className="flex items-start gap-3 justify-end">
@@ -16,7 +13,7 @@ const Me = ({message, time}) => {
       </div>
       <Avatar className="w-8 h-8 border border-[#30363d]">
         <AvatarImage src="/placeholder-user.jpg" alt="User Avatar" />
-        <AvatarFallback>JD</AvatarFallback>
+        <AvatarFallback></AvatarFallback>
       </Avatar>
     </div>
     

@@ -33,7 +33,7 @@ const Messages = () => {
         if (!hasMore) return;
 
         try {
-            const res = await axios.get(`http://localhost:4000/getMessages?roomId=${storedRoomId}&page=${pageNo}`);
+            const res = await axios.get(`${process.env.BACKEND_URL}/getMessages?roomId=${storedRoomId}&&page=${pageNo}`);
             if (res.data.roomMessages.length && pageNo < totalPages) {
                 setTotalPage(res.data.numberOfPages);
 

@@ -17,7 +17,6 @@ export const SocketProvider =({children})=>{
         const newSocket = io.connect("http://localhost:4000");
     
         newSocket.on('connect', () => {
-            console.log('Socket connected:', newSocket);
             setSocket(newSocket);
         });
     
