@@ -1,7 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Link } from "react-router-dom"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { useNavigate } from "react-router-dom"
 import { Textarea } from "@/components/ui/textarea"
 import Messages from "./messages/Messages"
 import { useRecoilState, useRecoilValue } from "recoil"
@@ -15,6 +13,7 @@ export default function Chat() {
   const username = useRecoilValue(Username)
   const roomId = useRecoilValue(RoomId)
   const socket = useSocket()
+  const navigate = useNavigate()
 
   function handleClick(){
     if(messageContent!==""){
@@ -23,6 +22,25 @@ export default function Chat() {
     }
     setMessageContent('')
   }
+
+  function handleLeave(){
+    const __createdtime__= Date.now()
+
+    if(socket){
+      socket.emit('leave_room' , {
+        username : localStorage.getItem('username'),
+        roomId: localStorage.getItem('roomId'),
+        __createdtime__
+
+      })
+      navigate('/', {replace:true})
+    }
+
+
+  }
+
+
+
   return (
     <div className="flex h-screen  w-full  bg-[#0d1117] text-white">
       <div className="border-r overflow-auto border-[#30363d] w-[300px] p-4">
@@ -38,7 +56,7 @@ export default function Chat() {
       <div className="flex-1 flex flex-col">
         <div className="border-b border-[#30363d] p-6 flex items-center justify-between">
           <h2 className="text-lg font-medium">{roomId}</h2>
-         
+          <Button onClick={handleLeave}>Leave</Button>
         </div>
     <>
     </>

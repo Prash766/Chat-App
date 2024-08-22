@@ -14,9 +14,11 @@ const FormPage = () => {
         if (roomId !== "" && username !== "") {
             localStorage.setItem('username', username);
             localStorage.setItem('roomId', roomId);
-    
-            socket.emit('join_room', { username, roomId });
-            navigate('/chat', { replace: true });
+    if(socket){
+
+        socket.emit('join_room', { username, roomId });
+        navigate('/chat', { replace: true });
+    }
         }
     }
     

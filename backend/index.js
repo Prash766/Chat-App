@@ -9,7 +9,7 @@ const app= express()
 const server = createServer(app)
 app.use(cors({
 
-    origin:"http://localhost:5174"
+    origin:"http://localhost:5173"
 }))
 app.use(express.json())
 
@@ -23,10 +23,11 @@ connectDB().then(()=>{
     const CHAT_BOT = 'ChatBot'
 let ChatRoom = ''
 let allUsers =[]
+let chatRoomUsers
 
 const io = new Server(server ,{
     cors:{
-        origin:"http://localhost:5174",
+        origin:"http://localhost:5173",
         methods:["GET" ,"POST"]
     }
 })
@@ -35,6 +36,7 @@ const io = new Server(server ,{
 io.on('connection' , (socket)=>{
     console.log(`User connected to ${socket.id}`)
 
+
     socket.on('join_room', (data) => {
         const { username, roomId } = data;
         console.log(`${username} joined room: ${roomId}`);  // Log this
@@ -42,7 +44,7 @@ io.on('connection' , (socket)=>{
     
         allUsers.push({ id: socket.id, username, roomId });
     
-        const chatRoomUsers = allUsers.filter((user) => user.roomId === roomId);
+        chatRoomUsers = allUsers.filter((user) => user.roomId === roomId);
     
         socket.to(roomId).emit('chatroom_users', chatRoomUsers);
         socket.emit('chatroom_users', chatRoomUsers);
@@ -83,6 +85,42 @@ io.on('connection' , (socket)=>{
             
         }
     })
+
+    socket.on('leave_room' , (data)=>{
+        const {username , roomId , __createdtime__}= data
+        socket.leave(roomId)
+        allUsers = chatRoomUsers.filter((user) => user.username != username);
+
+        socket.to(roomId).emit('chatroom_users' , allUsers)
+        socket.to(roomId).emit('recieve_message' , {
+            username:CHAT_BOT,
+            messageContent:`${username} has let the chat`,
+            __createdtime__
+        })
+        console.log('user has left the room')
+
+    })
+
+
+    socket.on('disconnect', ()=>{
+        const __createdtime__ = Date.now()
+        console.log(`user disconnected from the chat`)
+        const user = allUsers.find((user) => user.id == socket.id);
+        if(user?.username){
+            allUsers = chatRoomUsers.filter((e) => e.id != user.id );
+            socket.to(ChatRoom).emit('chatroom_users', allUsers);
+            socket.to(ChatRoom).emit('recieve_message', {
+              messageContent: `${user.username} has disconnected from the chat.`,
+              username:CHAT_BOT,
+              __createdtime__
+            });
+      
+        }
+
+    })
+
+
+
 })
 
 

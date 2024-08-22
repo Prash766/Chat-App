@@ -23,8 +23,6 @@ const Messages = () => {
     const [hasEntered , setHasEntered]  = useRecoilState(EnteredChat)
     const [totalPages , setTotalPage] = useRecoilState(totalPage)
 
-
-
     useEffect(() => {
         fetchMessages();
         setHasEntered(true);
@@ -91,7 +89,6 @@ const Messages = () => {
 
     useEffect(() => {
         if (!socket) return;
-
         const storedUsername = localStorage.getItem('username');
         const storedRoomId = localStorage.getItem('roomId');
 
@@ -107,6 +104,19 @@ const Messages = () => {
                 username: data.username,
                 __createdtime__: data.__createdtime__
             }]);
+
+            socket.on('disconnect', (data)=>{
+                setMessages(prev => [...prev, {
+                    message:data.messageContent,
+                    username:data.username,
+                    __createdtime__:data.__createdtime__
+                    
+
+                }])
+                localStorage.setItem('username' ,"")
+                localStorage.setItem('roomId' , "")
+                setHasEntered(false)
+            })
 
 
             if (data.username === 'ChatBot' && !hasEntered) {

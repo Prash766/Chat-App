@@ -1,8 +1,7 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
-import { SocketProvider } from './atoms/socket.jsx'
+import { SocketProvider } from './atoms/Socket.jsx'
 import { RecoilRoot } from 'recoil'
 import { Toaster } from 'sonner'
 
